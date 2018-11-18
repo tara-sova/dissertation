@@ -62,8 +62,6 @@ public class MainActivity extends ListActivity implements AdapterView.OnItemLong
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
 
         Lecture lecture1 = new Lecture("Юрий Литвинов111", "REAL.NET", "Как Qreal, только на .NET-e"
                                         , "08:30", 830, "09:30", 930);
@@ -87,8 +85,8 @@ public class MainActivity extends ListActivity implements AdapterView.OnItemLong
 
         ResponseEntity<String> postResponse1 = server.postLecture(lecture1);
         ResponseEntity<String> postResponse2 = server.postLecture(lecture2);
-        allLectures.add(server.getLectureWithId(postResponse1));
-        allLectures.add(server.getLectureWithId(postResponse2));
+        allLectures.add(server.getLecture(postResponse1));
+        allLectures.add(server.getLecture(postResponse2));
 
 //        ResponseEntity<String> get_response = (new RestTemplate()).getForEntity("http://localhost:8080/lectures" + "/1", String.class);
     }
@@ -125,7 +123,9 @@ public class MainActivity extends ListActivity implements AdapterView.OnItemLong
 
         Intent intent = new Intent(MainActivity.this, LectureEdition.class);
 
-        Lecture lecture = allLectures.get(position);
+//        Lecture lecture = allLectures.get(position);
+
+        Lecture lecture = server.getLectureByPosition((long)position);
         intent.putExtra("lecturerName", lecture.lecturerName);
         intent.putExtra("theme", lecture.theme);
         intent.putExtra("abstractContent", lecture.abstractContent);
@@ -146,6 +146,8 @@ public class MainActivity extends ListActivity implements AdapterView.OnItemLong
 
         return true;
     }
+
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

@@ -117,45 +117,12 @@ public class LectureEdition extends AppCompatActivity {
                 intent.putExtra("intTimeEnd", intTimeEnd);
 
                 setResult(Activity.RESULT_OK, intent);
+                Lecture lect = new Lecture(lecturerEdit.getText().toString(), themeEdit.getText().toString(), abstractEdit.getText().toString(),
+                        timeStart, intTimeStart, timeEnd, intTimeEnd);
+
                 finish();
-
-                String lecturerName = lecturerEdit.getText().toString();
-                String theme = themeEdit.getText().toString();
-                String abstractContent = abstractEdit.getText().toString();
-
-//                Lecture l = new Lecture(lecturerName, theme, abstractContent);
-//
-//// Create a new RestTemplate instance
-//                RestTemplate restTemplate = new RestTemplate();
-//
-//// Make the HTTP POST request, marshaling the request to JSON, and the response to a String
-//                String response = restTemplate.postForObject("http://localhost:8080/lectures", l, String.class);
             }
         }
     };
-
-
-
-    public static void MyGETRequest() throws IOException {
-        URL urlForGetRequest = new URL("http://localhost:8080/greeting");
-        String readLine = null;
-        HttpURLConnection conection = (HttpURLConnection) urlForGetRequest.openConnection();
-        conection.setRequestMethod("GET");
-        conection.setRequestProperty("id", "1"); // set userId its a sample here
-        int responseCode = conection.getResponseCode();
-        if (responseCode == HttpURLConnection.HTTP_OK) {
-            BufferedReader in = new BufferedReader(
-                    new InputStreamReader(conection.getInputStream()));
-            StringBuffer response = new StringBuffer();
-            while ((readLine = in .readLine()) != null) {
-                response.append(readLine);
-            } in .close();
-            // print result
-            System.out.println("JSON String Result " + response.toString());
-            //GetAndPost.POSTRequest(response.toString());
-        } else {
-            System.out.println("GET NOT WORKED");
-        }
-    }
 
 }
