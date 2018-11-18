@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -17,71 +19,59 @@ import android.widget.Toast;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.Socket;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import com.example.polina.adminapp.Lecture;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.http.converter.json.GsonHttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.client.RestTemplate;
 
 public class MainActivity extends ListActivity implements AdapterView.OnItemLongClickListener {
-
-    public class Lecture {
-        public String lecturerName;
-        public String theme;
-        public String abstractContent;
-
-        public String timeStart;
-        public int intTimeStart;
-        public String timeEnd;
-        public int intTimeEnd;
-
-        //public Time
-
-        public Lecture(String lecturerName, String theme, String abstractContent
-                       , String timeStart, int intTimeStart, String timeEnd, int intTimeEnd) {
-            this.lecturerName = lecturerName;
-            this.theme = theme;
-            this.abstractContent = abstractContent;
-
-            this.timeStart = timeStart;
-            this.intTimeStart = intTimeStart;
-            this.timeEnd = timeEnd;
-            this.intTimeEnd = intTimeEnd;
-        }
-    }
-
     public ArrayAdapter<String> mAdapter;
 
     private ArrayList<String> titlesForListActivity = new ArrayList<>();
     private ArrayList<Lecture> allLectures = new ArrayList<>();
+    private ServerConnection server = new ServerConnection();
 
     FloatingActionButton addButton;
+
 
     private String makeTitleForListActivity(Lecture lecture) {
         return "Лектор: " + lecture.lecturerName + "\n" + "Тема: " + lecture.theme + "\n" + "Время: " + lecture.timeStart + " - " + lecture.timeEnd;
     }
 
-    Socket socket = null;
-    DataOutputStream dataOutputStream = null;
-    DataInputStream dataInputStream = null;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
 
         Lecture lecture1 = new Lecture("Юрий Литвинов111", "REAL.NET", "Как Qreal, только на .NET-e"
                                         , "08:30", 830, "09:30", 930);
         titlesForListActivity.add(makeTitleForListActivity(lecture1));
-        allLectures.add(lecture1);
 
         Lecture lecture2 = new Lecture("Артемий Безгузиков", "Как стать успешным, если тебе почти 23 и ты живешь с мамой", "Никак"
                                          , "10:30", 1030, "11:30", 1130);
         titlesForListActivity.add(makeTitleForListActivity(lecture2));
-        allLectures.add(lecture2);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -92,10 +82,15 @@ public class MainActivity extends ListActivity implements AdapterView.OnItemLong
         mAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1, titlesForListActivity);
 
-
         setListAdapter(mAdapter);
         getListView().setOnItemLongClickListener(this);
 
+        ResponseEntity<String> postResponse1 = server.postLecture(lecture1);
+        ResponseEntity<String> postResponse2 = server.postLecture(lecture2);
+        allLectures.add(server.getLectureWithId(postResponse1));
+        allLectures.add(server.getLectureWithId(postResponse2));
+
+//        ResponseEntity<String> get_response = (new RestTemplate()).getForEntity("http://localhost:8080/lectures" + "/1", String.class);
     }
 
     @Override
@@ -141,7 +136,6 @@ public class MainActivity extends ListActivity implements AdapterView.OnItemLong
         intent.putExtra("intTimeEnd", lecture.intTimeEnd);
 
         startActivityForResult(intent, EDIT_ITEM);
-
 
 //        mAdapter.remove(selectedItem);
 //        mAdapter.notifyDataSetChanged();
