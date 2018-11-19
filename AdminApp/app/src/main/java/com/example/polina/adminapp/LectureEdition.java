@@ -117,9 +117,6 @@ public class LectureEdition extends AppCompatActivity {
                 intent.putExtra("intTimeEnd", intTimeEnd);
 
                 setResult(Activity.RESULT_OK, intent);
-                Lecture lect = new Lecture(lecturerEdit.getText().toString(), themeEdit.getText().toString(), abstractEdit.getText().toString(),
-                        timeStart, intTimeStart, timeEnd, intTimeEnd);
-
                 finish();
             }
         }

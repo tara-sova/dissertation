@@ -16,12 +16,6 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.Socket;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,15 +28,7 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import com.example.polina.adminapp.Lecture;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.StringHttpMessageConverter;
-import org.springframework.http.converter.json.GsonHttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
 public class MainActivity extends ListActivity implements AdapterView.OnItemLongClickListener {
@@ -61,8 +47,6 @@ public class MainActivity extends ListActivity implements AdapterView.OnItemLong
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-
         Lecture lecture1 = new Lecture("Юрий Литвинов111", "REAL.NET", "Как Qreal, только на .NET-e"
                                         , "08:30", 830, "09:30", 930);
         titlesForListActivity.add(makeTitleForListActivity(lecture1));
@@ -87,8 +71,6 @@ public class MainActivity extends ListActivity implements AdapterView.OnItemLong
         ResponseEntity<String> postResponse2 = server.postLecture(lecture2);
         allLectures.add(server.getLecture(postResponse1));
         allLectures.add(server.getLecture(postResponse2));
-
-//        ResponseEntity<String> get_response = (new RestTemplate()).getForEntity("http://localhost:8080/lectures" + "/1", String.class);
     }
 
     @Override
@@ -147,8 +129,6 @@ public class MainActivity extends ListActivity implements AdapterView.OnItemLong
         return true;
     }
 
-
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -173,25 +153,27 @@ public class MainActivity extends ListActivity implements AdapterView.OnItemLong
         if (requestCode == EDIT_ITEM) {
             titlesForListActivity.set(lecturePosition, makeTitleForListActivity(targetLecture));
             allLectures.set(lecturePosition, targetLecture);
+            server.putLecture(targetLecture, lecturePosition);
 
         } else if (requestCode == ADD_ITEM) {
             titlesForListActivity.add(makeTitleForListActivity(targetLecture));
-            allLectures.add(targetLecture);
+            ResponseEntity<String> postResponse = server.postLecture(targetLecture);
+            allLectures.add(server.getLecture(postResponse));
         }
 
-        Collections.sort(allLectures, new Comparator<Lecture>() {
-            @Override
-            public int compare(Lecture l1, Lecture l2) {
-                // -1 - less than, 1 - greater than, 0 - equal, all inversed for descending
-                return l1.intTimeStart < l2.intTimeStart ? -1 : (l1.intTimeStart > l2.intTimeStart) ? 1 : 0;
-            }
-        });
-
-        for (int i = 0; i < allLectures.size(); ++i) {
-            Lecture lecture = allLectures.get(i);
-            String title = makeTitleForListActivity(lecture);
-            titlesForListActivity.set(i, title);
-        }
+//        Collections.sort(allLectures, new Comparator<Lecture>() {
+//            @Override
+//            public int compare(Lecture l1, Lecture l2) {
+//                // -1 - less than, 1 - greater than, 0 - equal, all inversed for descending
+//                return l1.intTimeStart < l2.intTimeStart ? -1 : (l1.intTimeStart > l2.intTimeStart) ? 1 : 0;
+//            }
+//        });
+//
+//        for (int i = 0; i < allLectures.size(); ++i) {
+//            Lecture lecture = allLectures.get(i);
+//            String title = makeTitleForListActivity(lecture);
+//            titlesForListActivity.set(i, title);
+//        }
 
         mAdapter.notifyDataSetChanged();
     }
