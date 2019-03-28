@@ -47,11 +47,11 @@ public class MainActivity extends ListActivity implements AdapterView.OnItemLong
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Lecture lecture1 = new Lecture("Юрий Литвинов111", "REAL.NET", "Как Qreal, только на .NET-e"
+        Lecture lecture1 = new Lecture("Юрий Литвинов", "REAL.NET", "Введение в metaCase системы и демонстрация работы REAL.NET"
                                         , "08:30", 830, "09:30", 930);
         titlesForListActivity.add(makeTitleForListActivity(lecture1));
 
-        Lecture lecture2 = new Lecture("Артемий Безгузиков", "Как стать успешным, если тебе почти 23 и ты живешь с мамой", "Никак"
+        Lecture lecture2 = new Lecture("Артемий Безгузиков", "Бизнес-тренинг \"Мир айти и как его найти\"", "Артемий расскажет вам, как стать успешным"
                                          , "10:30", 1030, "11:30", 1130);
         titlesForListActivity.add(makeTitleForListActivity(lecture2));
 
