@@ -12,6 +12,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.google.gson.Gson;
+
 import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -22,14 +24,6 @@ import java.net.HttpURLConnection;
 import org.springframework.web.client.RestTemplate;
 
 public class LectureEdition extends AppCompatActivity {
-
-    private String lecturerName;
-    private String theme;
-    private String abstractContent;
-    private String timeStart;
-    private int intTimeStart;
-    private String timeEnd;
-    private int intTimeEnd;
 
     EditText lecturerEdit;
     EditText themeEdit;
@@ -46,16 +40,11 @@ public class LectureEdition extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lecture_edition);
 
-        lecturerName = getIntent().getExtras().getString("lecturerName");
-        theme = getIntent().getExtras().getString("theme");
-        abstractContent = getIntent().getExtras().getString("abstractContent");
+        Gson gson = new Gson();
+        Intent intent = getIntent();
+        String lectureAsAString = intent.getStringExtra("lectureAsAString");
+        Lecture lecture = gson.fromJson(lectureAsAString, Lecture.class);
         lecturePosition = getIntent().getExtras().getInt("position");
-
-        timeStart = getIntent().getExtras().getString("timeStart");
-        intTimeStart = getIntent().getExtras().getInt("intTimeStart");
-        timeEnd = getIntent().getExtras().getString("timeEnd");
-        intTimeEnd = getIntent().getExtras().getInt("intTimeEnd");
-
 
         lecturerEdit = findViewById(R.id.editText9);
         themeEdit = findViewById(R.id.editText10);
@@ -78,11 +67,16 @@ public class LectureEdition extends AppCompatActivity {
             timeEndEdit.setText("Конец");
 
         } else {
-            lecturerEdit.setText(lecturerName);
-            themeEdit.setText(theme);
-            abstractEdit.setText(abstractContent);
-            timeStartEdit.setText(timeStart);
-            timeEndEdit.setText(timeEnd);
+//            lecturerEdit.setText(lecturerName);
+//            themeEdit.setText(theme);
+//            abstractEdit.setText(abstractContent);
+//            timeStartEdit.setText(timeStart);
+//            timeEndEdit.setText(timeEnd);
+            lecturerEdit.setText(lecture.lecturerName);
+            themeEdit.setText(lecture.theme);
+            abstractEdit.setText(lecture.abstractContent);
+            timeStartEdit.setText(lecture.timeStart);
+            timeEndEdit.setText(lecture.timeEnd);
         }
     }
 
@@ -95,14 +89,10 @@ public class LectureEdition extends AppCompatActivity {
 
     private View.OnClickListener buttonListener = new View.OnClickListener() {
         public void onClick(View v) {
-            Intent intent = new Intent(LectureEdition.this, MainActivity.class);
-
             if (v.getId() == R.id.button)
             {
-                intent.putExtra("lecturerName", lecturerEdit.getText().toString());
-                intent.putExtra("theme", themeEdit.getText().toString());
-                intent.putExtra("abstractContent", abstractEdit.getText().toString());
-                intent.putExtra("position", lecturePosition);
+
+                Gson gson = new Gson();
 
                 String timeStart = normalizeTime(timeStartEdit.getText().toString());
                 int intTimeStart = Integer.parseInt(timeStart.replace(":", ""));
@@ -110,11 +100,19 @@ public class LectureEdition extends AppCompatActivity {
                 String timeEnd = normalizeTime(timeEndEdit.getText().toString());
                 int intTimeEnd = Integer.parseInt(timeEnd.replace(":", ""));
 
-                intent.putExtra("timeStart", timeStart);
-                intent.putExtra("intTimeStart", intTimeStart);
 
-                intent.putExtra("timeEnd", timeEnd);
-                intent.putExtra("intTimeEnd", intTimeEnd);
+                Lecture editedLecture = new Lecture(lecturerEdit.getText().toString(),
+                                                    themeEdit.getText().toString(),
+                                                    abstractEdit.getText().toString(),
+                                                    timeStart, intTimeStart,
+                                                    timeEnd, intTimeEnd);
+
+                String editedLectureAsAString = gson.toJson(editedLecture);
+
+
+                Intent intent = new Intent(LectureEdition.this, MainActivity.class);
+                intent.putExtra("editedLectureAsAString", editedLectureAsAString);
+                intent.putExtra("position", lecturePosition);
 
                 setResult(Activity.RESULT_OK, intent);
                 finish();

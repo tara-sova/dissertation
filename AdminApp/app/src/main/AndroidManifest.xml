@@ -11,7 +11,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".RunnerActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -19,7 +19,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".LectureEdition" />
-        <activity android:name=".AttendedClients"></activity>
+        <activity android:name=".AttendedClients" />
+        <activity android:name=".MainActivity" />
+        <activity android:name=".AttentedClientForm"></activity>
     </application>
 
 </manifest>

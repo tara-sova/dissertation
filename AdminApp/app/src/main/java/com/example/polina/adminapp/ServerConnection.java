@@ -18,10 +18,18 @@ public class ServerConnection {
     private static long offset = -1;
 
     public ServerConnection() {
+        setThreadPolicy();
+        setOffset();
+    }
+
+    public ServerConnection(long offsetForSet) {
+        setThreadPolicy();
+        setOffset(offsetForSet);
+    }
+
+    private void setThreadPolicy() {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
-
-        setOffset();
     }
 
     private void setOffset() {
@@ -29,6 +37,14 @@ public class ServerConnection {
         String idAtribute = "{\"id\":";
         Integer startSymbol = getResponse.getBody().lastIndexOf(idAtribute) + idAtribute.length();
         offset = Long.valueOf(getResponse.getBody().substring(startSymbol, getResponse.getBody().length() - 1).split(",")[0]);
+    }
+
+    public void setOffset(long offsetForSet) {
+        offset = offsetForSet;
+    }
+
+    public long getOffset() {
+        return offset;
     }
 
     public ResponseEntity<String> getAllLectures() {

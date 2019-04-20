@@ -27,26 +27,77 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import com.example.polina.adminapp.Lecture;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 public class MainActivity extends ListActivity implements AdapterView.OnItemLongClickListener {
-    public ArrayAdapter<String> mAdapter;
 
+    public ArrayAdapter<String> mAdapter;
     private ArrayList<String> titlesForListActivity = new ArrayList<>();
     private ArrayList<Lecture> allLectures = new ArrayList<>();
     private ServerConnection server = new ServerConnection();
-
     FloatingActionButton addButton;
+
+    private Boolean lectureFeature = null;
+    private Boolean lectureEditionFeature = null;
+    private Boolean attendedClientsFeature = null;
+    private Boolean beAttendedFeature = null;
+
+    @RunnerActivity.FeatureSetter(str = "lecture")
+    public void setLecture(Boolean lecture)
+    {
+        lectureFeature = lecture;
+    }
+
+    @RunnerActivity.FeatureSetter(str = "lectureEdition")
+    public void setLectureEdition(Boolean lectureEdition)
+    {
+        lectureEditionFeature = lectureEdition;
+    }
+
+    @RunnerActivity.FeatureSetter(str = "attendedClientsFeature")
+    public void setAttendedClients(Boolean attendedClients)
+    {
+        attendedClientsFeature = attendedClients;
+    }
+
+    private String currentClient = null;
+    @RunnerActivity.FeatureSetter(str = "beAttendedFeature")
+    public void setBeAttended(Boolean beAttended)
+    {
+        beAttendedFeature = beAttended;
+    }
+    // -------------------------------------
 
 
     private String makeTitleForListActivity(Lecture lecture) {
         return "Лектор: " + lecture.lecturerName + "\n" + "Тема: " + lecture.theme + "\n" + "Время: " + lecture.timeStart + " - " + lecture.timeEnd;
     }
 
+    private void restoreFeatures() {
+        Intent intent = getIntent();
+        Boolean lectureFeatureSelected = intent.getBooleanExtra("lectureFeatureSelected", false);
+        Boolean lectureEditionFeatureSelected = intent.getBooleanExtra("lectureEditionFeatureSelected", false);
+        Boolean attendedClientsFeatureSelected = intent.getBooleanExtra("attendedClientsFeatureSelected", false);
+        Boolean beAttendedFeatureSelected = intent.getBooleanExtra("beAttendedFeatureSelected", false);
+
+        setLecture(lectureFeatureSelected);
+        setLectureEdition(lectureEditionFeatureSelected);
+        setAttendedClients(attendedClientsFeatureSelected);
+        setBeAttended(beAttendedFeatureSelected);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        restoreFeatures();
+
+        if (!lectureFeature) {
+            return;
+        }
+
         Lecture lecture1 = new Lecture("Юрий Литвинов", "REAL.NET", "Введение в metaCase системы и демонстрация работы REAL.NET"
                                         , "08:30", 830, "09:30", 930);
         titlesForListActivity.add(makeTitleForListActivity(lecture1));
@@ -76,79 +127,68 @@ public class MainActivity extends ListActivity implements AdapterView.OnItemLong
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
-//        Toast.makeText(getApplicationContext(),
-//                "Вы выбрали " + (position + 1) + " элемент", Toast.LENGTH_SHORT).show();
 
-//        Toast.makeText(getApplicationContext(),
-//                "Вы выбрали " + l.getItemAtPosition(position).toString(), Toast.LENGTH_SHORT).show();
+//        if (attendedClientsFeature == null)
+//            return;
+
+        if (!attendedClientsFeature)
+            return;
 
         Intent intent = new Intent(MainActivity.this, AttendedClients.class);
 
-//        Lecture lecture = allLectures.get(position);
-//        intent.putExtra("lecturerName", lecture.lecturerName);
-//        intent.putExtra("theme", "\n\n"+ lecture.theme);
-//        intent.putExtra("abstractContent", lecture.abstractContent);
-
         startActivity(intent);
-
-//        Intent intent = new Intent(MainActivity.this, LectureInfoActivity.class);
-//        startActivity(intent);
     }
 
 
     private static final int EDIT_ITEM = 1;
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        //String selectedItem = parent.getItemAtPosition(position).toString();
+        if (lectureEditionFeature) {
+            Toast.makeText(getApplicationContext(), "Редактировать", Toast.LENGTH_SHORT).show();
 
-        Toast.makeText(getApplicationContext(), "Редактировать", Toast.LENGTH_SHORT).show();
+            Gson gson = new Gson();
+            Lecture lecture = server.getLectureByPosition((long) position);
+            String lectureAsAString = gson.toJson(lecture);
 
-        Intent intent = new Intent(MainActivity.this, LectureEdition.class);
+            Intent intent = new Intent(MainActivity.this, LectureEdition.class);
+            intent.putExtra("lectureAsAString", lectureAsAString);
+            intent.putExtra("position", position);
 
-//        Lecture lecture = allLectures.get(position);
+            startActivityForResult(intent, EDIT_ITEM);
 
-        Lecture lecture = server.getLectureByPosition((long)position);
-        intent.putExtra("lecturerName", lecture.lecturerName);
-        intent.putExtra("theme", lecture.theme);
-        intent.putExtra("abstractContent", lecture.abstractContent);
-        intent.putExtra("position", position);
-        intent.putExtra("timeStart", lecture.timeStart);
-        intent.putExtra("intTimeStart", lecture.intTimeStart);
-        intent.putExtra("timeEnd", lecture.timeEnd);
-        intent.putExtra("intTimeEnd", lecture.intTimeEnd);
+            return true;
+        }
+        if (beAttendedFeature) {
+            Toast.makeText(getApplicationContext(), "Редактировать", Toast.LENGTH_SHORT).show();
 
-        startActivityForResult(intent, EDIT_ITEM);
+            Intent intent = new Intent(MainActivity.this, AttentedClientForm.class);
+            intent.putExtra("serverOffset", server.getOffset());
+            intent.putExtra("position", position);
+            intent.putExtra("currentClient", currentClient);
 
-//        mAdapter.remove(selectedItem);
-//        mAdapter.notifyDataSetChanged();
-//
-//        Toast.makeText(getApplicationContext(),
-//                selectedItem + " удалён.",
-//                Toast.LENGTH_SHORT).show();
+            startActivityForResult(intent, EDIT_ITEM);
 
-        return true;
+            return true;
+        }
+        return false;
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
 
         if (resultCode != Activity.RESULT_OK)
         {
             return;
         }
 
-        String lecturerName = data.getStringExtra("lecturerName");
-        String theme = data.getStringExtra("theme");
-        String abstractContent = data.getStringExtra("abstractContent");
-        int lecturePosition = data.getIntExtra("position", 0);
-        String timeStart = data.getStringExtra("timeStart");
-        int intTimeStart = data.getIntExtra("intTimeStart", 0);
-        String timeEnd = data.getStringExtra("timeEnd");
-        int intTimeEnd = data.getIntExtra("intTimeEnd", 0);
-
-
-        Lecture targetLecture = new Lecture(lecturerName, theme, abstractContent, timeStart, intTimeStart, timeEnd, intTimeEnd);
+        Gson gson = new Gson();
+        String lectureAsAString = intent.getStringExtra("editedLectureAsAString");
+        Lecture targetLecture = gson.fromJson(lectureAsAString, Lecture.class);
+        int lecturePosition = intent.getExtras().getInt("position");
+        if (attendedClientsFeature) {
+            currentClient = intent.getStringExtra("currentClient");
+        }
 
         if (requestCode == EDIT_ITEM) {
             titlesForListActivity.set(lecturePosition, makeTitleForListActivity(targetLecture));
@@ -161,38 +201,25 @@ public class MainActivity extends ListActivity implements AdapterView.OnItemLong
             allLectures.add(server.getLecture(postResponse));
         }
 
-//        Collections.sort(allLectures, new Comparator<Lecture>() {
-//            @Override
-//            public int compare(Lecture l1, Lecture l2) {
-//                // -1 - less than, 1 - greater than, 0 - equal, all inversed for descending
-//                return l1.intTimeStart < l2.intTimeStart ? -1 : (l1.intTimeStart > l2.intTimeStart) ? 1 : 0;
-//            }
-//        });
-//
-//        for (int i = 0; i < allLectures.size(); ++i) {
-//            Lecture lecture = allLectures.get(i);
-//            String title = makeTitleForListActivity(lecture);
-//            titlesForListActivity.set(i, title);
-//        }
-
         mAdapter.notifyDataSetChanged();
     }
 
     private static final int ADD_ITEM = 2;
     private View.OnClickListener buttonListener = new View.OnClickListener() {
         public void onClick(View v) {
+            if (!lectureEditionFeature)
+                return;
+
             Intent intent = new Intent(MainActivity.this, LectureEdition.class);
 
             if (v.getId() == R.id.button7)
             {
-                intent.putExtra("lecturerName", "");
-                intent.putExtra("theme", "");
-                intent.putExtra("abstractContent", "");
+                Gson gson = new Gson();
+                Lecture lecture = new Lecture("", "", "", "", 0, "", 0);
+                String lectureAsAString = gson.toJson(lecture);
+
+                intent.putExtra("lectureAsAString", lectureAsAString);
                 intent.putExtra("position", -1);
-                intent.putExtra("timeStart", "");
-                intent.putExtra("intTimeStart", 0);
-                intent.putExtra("timeEnd", "");
-                intent.putExtra("intTimeEnd", 0);
 
                 startActivityForResult(intent, ADD_ITEM);
             }
