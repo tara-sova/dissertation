@@ -22,17 +22,13 @@ public class Lecture {
     public int intTimeStart;
     public String timeEnd;
     public int intTimeEnd;
-
-    Gson gson = new Gson();
-    ArrayList<String> attentedClientsList = new ArrayList<>();
-
-    String attentedClients;
+    public ArrayList<String> attentedClients;
 
     public Lecture(long id, String lecturerName, String theme, String abstractContent
                    , String timeStart, int intTimeStart, String timeEnd, int intTimeEnd) {
         this(lecturerName, theme, abstractContent, timeStart, intTimeStart, timeEnd, intTimeEnd);
         this.id = id;
-        this.attentedClients = gson.toJson(attentedClientsList);
+        this.attentedClients = new ArrayList<>();
     }
 
     public Lecture(String lecturerName, String theme, String abstractContent
@@ -45,12 +41,12 @@ public class Lecture {
         this.intTimeStart = intTimeStart;
         this.timeEnd = timeEnd;
         this.intTimeEnd = intTimeEnd;
-        this.attentedClients = gson.toJson(attentedClientsList);
+        this.attentedClients = new ArrayList<>();
     }
 
     public Lecture(String lecturerName, String theme, String abstractContent
             , String timeStart, int intTimeStart, String timeEnd, int intTimeEnd
-                   , String attentedClients) {
+                   , ArrayList<String> attentedClients) {
         this.lecturerName = lecturerName;
         this.theme = theme;
         this.abstractContent = abstractContent;
@@ -63,4 +59,8 @@ public class Lecture {
     }
 
     public Lecture() {}
+
+    public void updateAttendedClientsList(ArrayList<String> attentedClients) {
+        this.attentedClients = attentedClients;
+    }
 }

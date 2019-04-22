@@ -67,11 +67,6 @@ public class LectureEdition extends AppCompatActivity {
             timeEndEdit.setText("Конец");
 
         } else {
-//            lecturerEdit.setText(lecturerName);
-//            themeEdit.setText(theme);
-//            abstractEdit.setText(abstractContent);
-//            timeStartEdit.setText(timeStart);
-//            timeEndEdit.setText(timeEnd);
             lecturerEdit.setText(lecture.lecturerName);
             themeEdit.setText(lecture.theme);
             abstractEdit.setText(lecture.abstractContent);
@@ -108,7 +103,6 @@ public class LectureEdition extends AppCompatActivity {
                                                     timeEnd, intTimeEnd);
 
                 String editedLectureAsAString = gson.toJson(editedLecture);
-
 
                 Intent intent = new Intent(LectureEdition.this, MainActivity.class);
                 intent.putExtra("editedLectureAsAString", editedLectureAsAString);

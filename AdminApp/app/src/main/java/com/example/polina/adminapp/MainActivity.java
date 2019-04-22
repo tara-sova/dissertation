@@ -4,33 +4,17 @@ import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
-import com.example.polina.adminapp.Lecture;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
 
 public class MainActivity extends ListActivity implements AdapterView.OnItemLongClickListener {
 
@@ -40,36 +24,28 @@ public class MainActivity extends ListActivity implements AdapterView.OnItemLong
     private ServerConnection server = new ServerConnection();
     FloatingActionButton addButton;
 
-    private Boolean lectureFeature = null;
     private Boolean lectureEditionFeature = null;
     private Boolean attendedClientsFeature = null;
     private Boolean beAttendedFeature = null;
 
-    @RunnerActivity.FeatureSetter(str = "lecture")
-    public void setLecture(Boolean lecture)
-    {
-        lectureFeature = lecture;
-    }
-
-    @RunnerActivity.FeatureSetter(str = "lectureEdition")
+    @RunnerActivity.FeatureSetter(str = "LectureEdition")
     public void setLectureEdition(Boolean lectureEdition)
     {
         lectureEditionFeature = lectureEdition;
     }
 
-    @RunnerActivity.FeatureSetter(str = "attendedClientsFeature")
+    @RunnerActivity.FeatureSetter(str = "BeAttended")
     public void setAttendedClients(Boolean attendedClients)
     {
         attendedClientsFeature = attendedClients;
     }
 
     private String currentClient = null;
-    @RunnerActivity.FeatureSetter(str = "beAttendedFeature")
+    @RunnerActivity.FeatureSetter(str = "AttendedClients")
     public void setBeAttended(Boolean beAttended)
     {
         beAttendedFeature = beAttended;
     }
-    // -------------------------------------
 
 
     private String makeTitleForListActivity(Lecture lecture) {
@@ -77,13 +53,10 @@ public class MainActivity extends ListActivity implements AdapterView.OnItemLong
     }
 
     private void restoreFeatures() {
-        Intent intent = getIntent();
-        Boolean lectureFeatureSelected = intent.getBooleanExtra("lectureFeatureSelected", false);
-        Boolean lectureEditionFeatureSelected = intent.getBooleanExtra("lectureEditionFeatureSelected", false);
-        Boolean attendedClientsFeatureSelected = intent.getBooleanExtra("attendedClientsFeatureSelected", false);
-        Boolean beAttendedFeatureSelected = intent.getBooleanExtra("beAttendedFeatureSelected", false);
+        Boolean lectureEditionFeatureSelected = FeatureInstances.lectureFeature.isFeatureActivated();
+        Boolean attendedClientsFeatureSelected = FeatureInstances.attendedClientsFeature.isFeatureActivated();
+        Boolean beAttendedFeatureSelected = FeatureInstances.clientFeature.isFeatureActivated();
 
-        setLecture(lectureFeatureSelected);
         setLectureEdition(lectureEditionFeatureSelected);
         setAttendedClients(attendedClientsFeatureSelected);
         setBeAttended(beAttendedFeatureSelected);
@@ -93,10 +66,6 @@ public class MainActivity extends ListActivity implements AdapterView.OnItemLong
     protected void onCreate(Bundle savedInstanceState) {
 
         restoreFeatures();
-
-        if (!lectureFeature) {
-            return;
-        }
 
         Lecture lecture1 = new Lecture("Юрий Литвинов", "REAL.NET", "Введение в metaCase системы и демонстрация работы REAL.NET"
                                         , "08:30", 830, "09:30", 930);
@@ -134,7 +103,12 @@ public class MainActivity extends ListActivity implements AdapterView.OnItemLong
         if (!attendedClientsFeature)
             return;
 
+        Gson gson = new Gson();
+        Lecture lecture = server.getLectureByPosition((long) position);
+        String lectureAsAString = gson.toJson(lecture);
+
         Intent intent = new Intent(MainActivity.this, AttendedClients.class);
+        intent.putExtra("lectureAsAString", lectureAsAString);
 
         startActivity(intent);
     }
@@ -143,12 +117,13 @@ public class MainActivity extends ListActivity implements AdapterView.OnItemLong
     private static final int EDIT_ITEM = 1;
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+
+        Gson gson = new Gson();
+        Lecture lecture = server.getLectureByPosition((long) position);
+        String lectureAsAString = gson.toJson(lecture);
+
         if (lectureEditionFeature) {
             Toast.makeText(getApplicationContext(), "Редактировать", Toast.LENGTH_SHORT).show();
-
-            Gson gson = new Gson();
-            Lecture lecture = server.getLectureByPosition((long) position);
-            String lectureAsAString = gson.toJson(lecture);
 
             Intent intent = new Intent(MainActivity.this, LectureEdition.class);
             intent.putExtra("lectureAsAString", lectureAsAString);
@@ -161,8 +136,8 @@ public class MainActivity extends ListActivity implements AdapterView.OnItemLong
         if (beAttendedFeature) {
             Toast.makeText(getApplicationContext(), "Редактировать", Toast.LENGTH_SHORT).show();
 
-            Intent intent = new Intent(MainActivity.this, AttentedClientForm.class);
-            intent.putExtra("serverOffset", server.getOffset());
+            Intent intent = new Intent(MainActivity.this, ClientForm.class);
+            intent.putExtra("lectureAsAString", lectureAsAString);
             intent.putExtra("position", position);
             intent.putExtra("currentClient", currentClient);
 
@@ -186,7 +161,7 @@ public class MainActivity extends ListActivity implements AdapterView.OnItemLong
         String lectureAsAString = intent.getStringExtra("editedLectureAsAString");
         Lecture targetLecture = gson.fromJson(lectureAsAString, Lecture.class);
         int lecturePosition = intent.getExtras().getInt("position");
-        if (attendedClientsFeature) {
+        if (beAttendedFeature) {
             currentClient = intent.getStringExtra("currentClient");
         }
 

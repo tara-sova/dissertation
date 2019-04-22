@@ -20,11 +20,6 @@ import java.util.List;
 
 public class RunnerActivity extends AppCompatActivity {
 
-    private Lecture lectureFeature = null;
-    private LectureEdition lectureEditionFeature = null;
-    private AttendedClients attendedClientsFeature = null;
-
-
     @Target(value= ElementType.METHOD)
     @Retention(value= RetentionPolicy.RUNTIME)
     public @interface FeatureSetter {
@@ -39,35 +34,32 @@ public class RunnerActivity extends AppCompatActivity {
 
         ArrayList<String> featureList = loadConfig("path");
         checkConfigurationCorrectness(featureList);
+
+        loadFeaturesByReflection(featureList);
+
         startConfiguredApp(featureList);
     }
 
     private ArrayList<String> loadConfig(String path) {
         ArrayList<String> featureList = new ArrayList<String>();
-        featureList.add("Lecture");
 //        featureList.add("LectureEdition");
-//        featureList.add("AttendedClients");
-        featureList.add("BeAttented");
+        featureList.add("AttendedClients");
+        featureList.add("BeAttended");
         return featureList;
     }
 
     private void checkConfigurationCorrectness(ArrayList<String> featureList) {
-        if (!featureList.contains("Lecture")) {
-            if (!featureList.contains("LectureEdition")) {
-                throw new IllegalArgumentException("Lecture edition is not supported without Lecture selection");
-            }
-            if (!featureList.contains("AttendedClients")) {
-                throw new IllegalArgumentException("Attended clients view is not supported without Lecture selection");
-            }
+        if (featureList.contains("LectureEdition") && featureList.add("BeAttended")) {
+            throw new IllegalArgumentException("Two features for one action button (AttendedClients and BeAttended)");
         }
+    }
+
+    private void loadFeaturesByReflection(ArrayList<String> featureList) {
+        FeatureInstances.init(featureList);
     }
 
     private void startConfiguredApp(ArrayList<String> featureList) {
         Intent intent = new Intent(RunnerActivity.this, MainActivity.class);
-        intent.putExtra("lectureFeatureSelected", featureList.contains("Lecture"));
-        intent.putExtra("lectureEditionFeatureSelected", featureList.contains("LectureEdition"));
-        intent.putExtra("attendedClientsFeatureSelected", featureList.contains("AttendedClients"));
-        intent.putExtra("beAttendedFeatureSelected", featureList.contains("BeAttented"));
         startActivity(intent);
     }
 }

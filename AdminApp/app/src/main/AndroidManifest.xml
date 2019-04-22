@@ -21,7 +21,7 @@
         <activity android:name=".LectureEdition" />
         <activity android:name=".AttendedClients" />
         <activity android:name=".MainActivity" />
-        <activity android:name=".AttentedClientForm"></activity>
+        <activity android:name=".ClientForm"></activity>
     </application>
 
 </manifest>
