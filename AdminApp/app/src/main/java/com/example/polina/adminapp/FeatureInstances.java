@@ -1,5 +1,10 @@
 package com.example.polina.adminapp;
 
+import com.example.polina.adminapp.Features.AttendedClientsFeature;
+import com.example.polina.adminapp.Features.ClientFeature;
+import com.example.polina.adminapp.Features.LectureFeature;
+import com.example.polina.adminapp.Features.ServerFeature;
+
 import java.util.ArrayList;
 
 public class FeatureInstances {
@@ -10,17 +15,14 @@ public class FeatureInstances {
     private static final String beAttendedFeatureConfigStr  = "BeAttended";
     static public ClientFeature clientFeature = new ClientFeature();
 
-    private static final String attendedClientsFeatureConfigStr  = "AttendedClients";
+    private static final String attendedClientsFeatureConfigStr  = "AttendedClientsActivity";
     static public AttendedClientsFeature attendedClientsFeature = new AttendedClientsFeature();
+
+    private static final String serverFeatureConfigStr  = "Server";
+    static public ServerFeature serverFeature = new ServerFeature();
 
     static void init(ArrayList<String> featureInstances) {
         for (String fI : featureInstances) {
-//            if (fI.equals(lectureFeatureConfigStr)) {
-//                lectureFeature = new LectureFeature(true);
-//            }
-//            if (fI.equals(lectureFeatureConfigStr)) {
-//                lectureFeature = new LectureFeature(true);
-//            }
             switch(fI)
             {
                 case lectureFeatureConfigStr:
@@ -31,6 +33,9 @@ public class FeatureInstances {
                     break;
                 case attendedClientsFeatureConfigStr:
                     attendedClientsFeature.activateFeature();
+                    break;
+                case serverFeatureConfigStr:
+                    serverFeature.activateFeature();
                     break;
             }
         }

@@ -63,4 +63,10 @@ public class Lecture {
     public void updateAttendedClientsList(ArrayList<String> attentedClients) {
         this.attentedClients = attentedClients;
     }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+
 }

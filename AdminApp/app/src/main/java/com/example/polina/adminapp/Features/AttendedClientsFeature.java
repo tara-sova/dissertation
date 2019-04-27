@@ -1,4 +1,4 @@
-package com.example.polina.adminapp;
+package com.example.polina.adminapp.Features;
 
 public class AttendedClientsFeature {
     private boolean attendedClients = false;

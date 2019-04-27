@@ -16,50 +16,29 @@ import com.google.gson.Gson;
 
 import org.springframework.http.ResponseEntity;
 
-public class MainActivity extends ListActivity implements AdapterView.OnItemLongClickListener {
+//@LinksTo("ClientFeature")
+//@LinksTo("LectureEdition")
+public class LectureListActivity extends ListActivity implements AdapterView.OnItemLongClickListener {
 
     public ArrayAdapter<String> mAdapter;
     private ArrayList<String> titlesForListActivity = new ArrayList<>();
     private ArrayList<Lecture> allLectures = new ArrayList<>();
-    private ServerConnection server = new ServerConnection();
     FloatingActionButton addButton;
 
     private Boolean lectureEditionFeature = null;
     private Boolean attendedClientsFeature = null;
     private Boolean beAttendedFeature = null;
 
-    @RunnerActivity.FeatureSetter(str = "LectureEdition")
-    public void setLectureEdition(Boolean lectureEdition)
-    {
-        lectureEditionFeature = lectureEdition;
-    }
-
-    @RunnerActivity.FeatureSetter(str = "BeAttended")
-    public void setAttendedClients(Boolean attendedClients)
-    {
-        attendedClientsFeature = attendedClients;
-    }
-
     private String currentClient = null;
-    @RunnerActivity.FeatureSetter(str = "AttendedClients")
-    public void setBeAttended(Boolean beAttended)
-    {
-        beAttendedFeature = beAttended;
-    }
-
 
     private String makeTitleForListActivity(Lecture lecture) {
         return "Лектор: " + lecture.lecturerName + "\n" + "Тема: " + lecture.theme + "\n" + "Время: " + lecture.timeStart + " - " + lecture.timeEnd;
     }
 
     private void restoreFeatures() {
-        Boolean lectureEditionFeatureSelected = FeatureInstances.lectureFeature.isFeatureActivated();
-        Boolean attendedClientsFeatureSelected = FeatureInstances.attendedClientsFeature.isFeatureActivated();
-        Boolean beAttendedFeatureSelected = FeatureInstances.clientFeature.isFeatureActivated();
-
-        setLectureEdition(lectureEditionFeatureSelected);
-        setAttendedClients(attendedClientsFeatureSelected);
-        setBeAttended(beAttendedFeatureSelected);
+        lectureEditionFeature = FeatureInstances.lectureFeature.isFeatureActivated();
+        attendedClientsFeature = FeatureInstances.attendedClientsFeature.isFeatureActivated();
+        beAttendedFeature = FeatureInstances.clientFeature.isFeatureActivated();
     }
 
     @Override
@@ -87,27 +66,22 @@ public class MainActivity extends ListActivity implements AdapterView.OnItemLong
         setListAdapter(mAdapter);
         getListView().setOnItemLongClickListener(this);
 
-        ResponseEntity<String> postResponse1 = server.postLecture(lecture1);
-        ResponseEntity<String> postResponse2 = server.postLecture(lecture2);
-        allLectures.add(server.getLecture(postResponse1));
-        allLectures.add(server.getLecture(postResponse2));
+        allLectures.add(CommonSettings.postThanGetLecture(lecture1));
+        allLectures.add(CommonSettings.postThanGetLecture(lecture2));
     }
 
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
 
-//        if (attendedClientsFeature == null)
-//            return;
-
         if (!attendedClientsFeature)
             return;
 
         Gson gson = new Gson();
-        Lecture lecture = server.getLectureByPosition((long) position);
+        Lecture lecture = CommonSettings.getLectureByPosition((long) position);
         String lectureAsAString = gson.toJson(lecture);
 
-        Intent intent = new Intent(MainActivity.this, AttendedClients.class);
+        Intent intent = new Intent(LectureListActivity.this, AttendedClientsActivity.class);
         intent.putExtra("lectureAsAString", lectureAsAString);
 
         startActivity(intent);
@@ -119,13 +93,13 @@ public class MainActivity extends ListActivity implements AdapterView.OnItemLong
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 
         Gson gson = new Gson();
-        Lecture lecture = server.getLectureByPosition((long) position);
+        Lecture lecture = CommonSettings.getLectureByPosition((long) position);
         String lectureAsAString = gson.toJson(lecture);
 
         if (lectureEditionFeature) {
             Toast.makeText(getApplicationContext(), "Редактировать", Toast.LENGTH_SHORT).show();
 
-            Intent intent = new Intent(MainActivity.this, LectureEdition.class);
+            Intent intent = new Intent(LectureListActivity.this, LectureEdition.class);
             intent.putExtra("lectureAsAString", lectureAsAString);
             intent.putExtra("position", position);
 
@@ -136,7 +110,7 @@ public class MainActivity extends ListActivity implements AdapterView.OnItemLong
         if (beAttendedFeature) {
             Toast.makeText(getApplicationContext(), "Редактировать", Toast.LENGTH_SHORT).show();
 
-            Intent intent = new Intent(MainActivity.this, ClientForm.class);
+            Intent intent = new Intent(LectureListActivity.this, ClientFormActivity.class);
             intent.putExtra("lectureAsAString", lectureAsAString);
             intent.putExtra("position", position);
             intent.putExtra("currentClient", currentClient);
@@ -168,12 +142,11 @@ public class MainActivity extends ListActivity implements AdapterView.OnItemLong
         if (requestCode == EDIT_ITEM) {
             titlesForListActivity.set(lecturePosition, makeTitleForListActivity(targetLecture));
             allLectures.set(lecturePosition, targetLecture);
-            server.putLecture(targetLecture, lecturePosition);
+            CommonSettings.putLecture(targetLecture, lecturePosition);
 
         } else if (requestCode == ADD_ITEM) {
             titlesForListActivity.add(makeTitleForListActivity(targetLecture));
-            ResponseEntity<String> postResponse = server.postLecture(targetLecture);
-            allLectures.add(server.getLecture(postResponse));
+            allLectures.add(CommonSettings.postThanGetLecture(targetLecture));
         }
 
         mAdapter.notifyDataSetChanged();
@@ -185,7 +158,7 @@ public class MainActivity extends ListActivity implements AdapterView.OnItemLong
             if (!lectureEditionFeature)
                 return;
 
-            Intent intent = new Intent(MainActivity.this, LectureEdition.class);
+            Intent intent = new Intent(LectureListActivity.this, LectureEdition.class);
 
             if (v.getId() == R.id.button7)
             {

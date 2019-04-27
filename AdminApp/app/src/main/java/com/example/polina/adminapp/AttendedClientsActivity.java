@@ -9,7 +9,7 @@ import android.widget.ArrayAdapter;
 
 import com.google.gson.Gson;
 
-public class AttendedClients  extends ListActivity {
+public class AttendedClientsActivity extends ListActivity {
 
     public ArrayAdapter<String> mAdapter;
 
@@ -26,6 +26,5 @@ public class AttendedClients  extends ListActivity {
                 android.R.layout.simple_list_item_1, lecture.attentedClients);
 
         setListAdapter(mAdapter);
-
     }
 }

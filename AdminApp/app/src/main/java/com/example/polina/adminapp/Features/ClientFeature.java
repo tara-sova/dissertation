@@ -1,4 +1,4 @@
-package com.example.polina.adminapp;
+package com.example.polina.adminapp.Features;
 
 public class ClientFeature {
     private boolean beAttended = false;

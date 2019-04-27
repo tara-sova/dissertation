@@ -2,7 +2,6 @@ package com.example.polina.adminapp;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 
 
@@ -14,15 +13,10 @@ import android.widget.EditText;
 
 import com.google.gson.Gson;
 
-import java.io.IOException;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.HttpURLConnection;
 //import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.web.client.RestTemplate;
 
+
+//@LinksTo("LectureListActivity")
 public class LectureEdition extends AppCompatActivity {
 
     EditText lecturerEdit;
@@ -104,7 +98,7 @@ public class LectureEdition extends AppCompatActivity {
 
                 String editedLectureAsAString = gson.toJson(editedLecture);
 
-                Intent intent = new Intent(LectureEdition.this, MainActivity.class);
+                Intent intent = new Intent(LectureEdition.this, LectureListActivity.class);
                 intent.putExtra("editedLectureAsAString", editedLectureAsAString);
                 intent.putExtra("position", lecturePosition);
 

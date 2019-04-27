@@ -18,7 +18,7 @@ import java.util.ArrayList;
 //import org.springframework.boot.test.web.client.TestRestTemplate;
 
 
-public class ClientForm extends AppCompatActivity {
+public class ClientFormActivity extends AppCompatActivity {
 
 
     private EditText nameEdit;
@@ -83,7 +83,7 @@ public class ClientForm extends AppCompatActivity {
 
                 String editedLectureAsAString = gson.toJson(lecture);
 
-                Intent intent = new Intent(ClientForm.this, MainActivity.class);
+                Intent intent = new Intent(ClientFormActivity.this, LectureListActivity.class);
                 intent.putExtra("currentClient", currentClient);
                 intent.putExtra("editedLectureAsAString", editedLectureAsAString);
                 intent.putExtra("position", lecturePosition);

@@ -22,11 +22,6 @@ public class ServerConnection {
         setOffset();
     }
 
-//    public ServerConnection(long offsetForSet) {
-//        setThreadPolicy();
-//        setOffset(offsetForSet);
-//    }
-
     private void setThreadPolicy() {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
