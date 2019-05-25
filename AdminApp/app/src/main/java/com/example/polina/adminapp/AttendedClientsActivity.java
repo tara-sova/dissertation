@@ -11,7 +11,13 @@ import com.google.gson.Gson;
 
 public class AttendedClientsActivity extends ListActivity {
 
+    @AnnotationList.OnItemClickTO(featureNameFrom = "LectureListActivity")
+    public String link;
+
     public ArrayAdapter<String> mAdapter;
+
+    @AnnotationList.InComingArg(convertedClass = Lecture.class)
+    private String lectureAsAString;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,7 +25,7 @@ public class AttendedClientsActivity extends ListActivity {
 
         Gson gson = new Gson();
         Intent intent = getIntent();
-        String lectureAsAString = intent.getStringExtra("lectureAsAString");
+        lectureAsAString = intent.getStringExtra("lectureAsAString");
         Lecture lecture = gson.fromJson(lectureAsAString, Lecture.class);
 
         mAdapter = new ArrayAdapter<>(this,

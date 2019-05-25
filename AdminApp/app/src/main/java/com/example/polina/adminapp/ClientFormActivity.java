@@ -20,16 +20,27 @@ import java.util.ArrayList;
 
 public class ClientFormActivity extends AppCompatActivity {
 
+    @AnnotationList.OnLongItemClickTO(featureNameFrom = "LectureListActivity")
+    public String link;
+
+    @AnnotationList.InComingArg(convertedClass = Lecture.class)
+    @AnnotationList.OutComingArg(convertedClass = Lecture.class)
+    private String lectureAsAString;
+
+    @AnnotationList.InComingArg(convertedClass = Integer.class)
+    @AnnotationList.OutComingArg(convertedClass = Integer.class)
+    private int position;
+
+    @AnnotationList.InComingArg(convertedClass = String.class)
+    @AnnotationList.OutComingArg(convertedClass = String.class)
+    private String currentClient;
+
+    private Lecture lecture = null;
 
     private EditText nameEdit;
     private CheckBox checkBox;
     private Boolean checkBoxStateOnCreateState;
     private Button button;
-
-    private int lecturePosition;
-
-    private Lecture lecture = null;
-    private String currentClient = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,10 +49,11 @@ public class ClientFormActivity extends AppCompatActivity {
 
         Gson gson = new Gson();
         Intent intent = getIntent();
-        String lectureAsAString = intent.getStringExtra("lectureAsAString");
-        lecture = gson.fromJson(lectureAsAString, Lecture.class);
-        lecturePosition = getIntent().getExtras().getInt("position");
+        lectureAsAString = intent.getStringExtra("lectureAsAString");
+        position = getIntent().getExtras().getInt("position");
         currentClient = getIntent().getStringExtra("currentClient");
+
+        lecture = gson.fromJson(lectureAsAString, Lecture.class);
 
         nameEdit = findViewById(R.id.clientName);
         checkBox = findViewById(R.id.checkBox);
@@ -81,12 +93,14 @@ public class ClientFormActivity extends AppCompatActivity {
                     }
                 }
 
-                String editedLectureAsAString = gson.toJson(lecture);
+//                String editedLectureAsAString = gson.toJson(lecture);
+                lectureAsAString = gson.toJson(lecture);
 
                 Intent intent = new Intent(ClientFormActivity.this, LectureListActivity.class);
                 intent.putExtra("currentClient", currentClient);
-                intent.putExtra("editedLectureAsAString", editedLectureAsAString);
-                intent.putExtra("position", lecturePosition);
+                intent.putExtra("lectureAsAString", lectureAsAString);
+//                intent.putExtra("editedLectureAsAString", editedLectureAsAString);
+                intent.putExtra("position", position);
 
                 setResult(Activity.RESULT_OK, intent);
                 finish();

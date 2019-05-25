@@ -19,6 +19,8 @@ import com.google.gson.Gson;
 //@LinksTo("LectureListActivity")
 public class LectureEdition extends AppCompatActivity {
 
+    @AnnotationList.OnLongItemClickTO(featureNameFrom = "LectureListActivity")
+
     EditText lecturerEdit;
     EditText themeEdit;
     EditText abstractEdit;
@@ -27,7 +29,11 @@ public class LectureEdition extends AppCompatActivity {
 
     Button button;
 
-    int lecturePosition;
+    @AnnotationList.InComingArg(convertedClass = Integer.class)
+    int position;
+
+    @AnnotationList.InComingArg(convertedClass = Lecture.class)
+    String lectureAsAString;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,9 +42,9 @@ public class LectureEdition extends AppCompatActivity {
 
         Gson gson = new Gson();
         Intent intent = getIntent();
-        String lectureAsAString = intent.getStringExtra("lectureAsAString");
+        lectureAsAString = intent.getStringExtra("lectureAsAString");
         Lecture lecture = gson.fromJson(lectureAsAString, Lecture.class);
-        lecturePosition = getIntent().getExtras().getInt("position");
+        position = getIntent().getExtras().getInt("position");
 
         lecturerEdit = findViewById(R.id.editText9);
         themeEdit = findViewById(R.id.editText10);
@@ -51,7 +57,7 @@ public class LectureEdition extends AppCompatActivity {
         button.setOnClickListener(buttonListener);
 
         // Case of addition
-        if (lecturePosition == -1) {
+        if (position == -1) {
             button.setText("Добавить");
 
             lecturerEdit.setText("Лектор");
@@ -96,11 +102,11 @@ public class LectureEdition extends AppCompatActivity {
                                                     timeStart, intTimeStart,
                                                     timeEnd, intTimeEnd);
 
-                String editedLectureAsAString = gson.toJson(editedLecture);
+                lectureAsAString = gson.toJson(editedLecture);
 
                 Intent intent = new Intent(LectureEdition.this, LectureListActivity.class);
-                intent.putExtra("editedLectureAsAString", editedLectureAsAString);
-                intent.putExtra("position", lecturePosition);
+                intent.putExtra("lectureAsAString", lectureAsAString);
+                intent.putExtra("position", position);
 
                 setResult(Activity.RESULT_OK, intent);
                 finish();

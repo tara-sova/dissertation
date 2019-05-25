@@ -6,6 +6,8 @@ import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.example.polina.adminapp.ServerConnectionInstallation.ServerSetting;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -14,11 +16,11 @@ import java.util.ArrayList;
 
 public class RunnerActivity extends AppCompatActivity {
 
-    @Target(value= ElementType.METHOD)
-    @Retention(value= RetentionPolicy.RUNTIME)
-    public @interface FeatureSetter {
-        String str();
-    }
+//    @Target(value= ElementType.METHOD)
+//    @Retention(value= RetentionPolicy.RUNTIME)
+//    public @interface FeatureSetter {
+//        String str();
+//    }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -31,15 +33,15 @@ public class RunnerActivity extends AppCompatActivity {
 
         loadFeaturesByReflection(featureList);
 
-        CommonSettings.init();
+//        ServerSetting.init();
 
         startConfiguredApp(featureList);
     }
 
     private ArrayList<String> loadConfig(String path) {
         ArrayList<String> featureList = new ArrayList<String>();
-//        featureList.add("LectureEdition");
-        featureList.add("AttendedClientsActivity");
+        featureList.add("LectureEdition");
+//        featureList.add("AttendedClientsActivity");
         featureList.add("BeAttended");
         featureList.add("Server");
         return featureList;
