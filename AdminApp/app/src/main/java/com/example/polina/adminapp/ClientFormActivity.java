@@ -15,8 +15,6 @@ import android.widget.EditText;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
-//import org.springframework.boot.test.web.client.TestRestTemplate;
-
 
 public class ClientFormActivity extends AppCompatActivity {
 
