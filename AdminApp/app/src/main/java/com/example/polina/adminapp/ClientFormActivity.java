@@ -16,6 +16,8 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
+@AnnotationList.AbstractFeature(abstractFatureName = "RegisterOnAnEvent")
+@AnnotationList.Feature(featureName = "BeAttended")
 public class ClientFormActivity extends AppCompatActivity {
 
     @AnnotationList.OnLongItemClickTO(featureNameFrom = "LectureListActivity")

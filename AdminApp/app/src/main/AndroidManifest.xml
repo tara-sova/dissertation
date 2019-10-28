@@ -19,10 +19,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".LectureEdition" />
-        <activity android:name=".AttendedClientsActivity" />
         <activity android:name=".LectureListActivity" />
+        <activity android:name=".AttendedClientsActivity" />
         <activity android:name=".ClientFormActivity" />
-        <activity android:name=".CommonSettingsActivity"></activity>
     </application>
 
 </manifest>

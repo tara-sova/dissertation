@@ -28,24 +28,24 @@ public class RunnerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_runner);
 
-        ArrayList<String> featureList = loadConfig("path");
+//        ArrayList<String> featureList = loadConfig("path");
 //        checkConfigurationCorrectness(featureList);
 
-        loadFeaturesByReflection(featureList);
+//        loadFeaturesByReflection(featureList);
 
 //        ServerSetting.init();
 
-        startConfiguredApp(featureList);
+        startConfiguredApp();
     }
 
-    private ArrayList<String> loadConfig(String path) {
-        ArrayList<String> featureList = new ArrayList<String>();
-        featureList.add("LectureEdition");
-//        featureList.add("AttendedClientsActivity");
-        featureList.add("BeAttended");
-        featureList.add("Server");
-        return featureList;
-    }
+//    private ArrayList<String> loadConfig(String path) {
+//        ArrayList<String> featureList = new ArrayList<String>();
+//        featureList.add("LectureEdition");
+////        featureList.add("AttendedClientsActivity");
+//        featureList.add("BeAttended");
+//        featureList.add("Server");
+//        return featureList;
+//    }
 //
 //    private void checkConfigurationCorrectness(ArrayList<String> featureList) {
 //        if (featureList.contains("LectureEdition") && featureList.add("BeAttended")) {
@@ -53,11 +53,11 @@ public class RunnerActivity extends AppCompatActivity {
 //        }
 //    }
 
-    private void loadFeaturesByReflection(ArrayList<String> featureList) {
-        FeatureInstances.init(featureList);
-    }
+//    private void loadFeaturesByReflection(ArrayList<String> featureList) {
+//        FeatureInstances.init(featureList);
+//    }
 
-    private void startConfiguredApp(ArrayList<String> featureList) {
+    private void startConfiguredApp() {
         Intent intent = new Intent(RunnerActivity.this, LectureListActivity.class);
         startActivity(intent);
     }

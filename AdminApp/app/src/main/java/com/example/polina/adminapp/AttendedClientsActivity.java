@@ -9,6 +9,8 @@ import android.widget.ArrayAdapter;
 
 import com.google.gson.Gson;
 
+@AnnotationList.AbstractFeature(abstractFatureName = "EventInfo")
+@AnnotationList.Feature(featureName = "AttendedClients")
 public class AttendedClientsActivity extends ListActivity {
 
     @AnnotationList.OnItemClickTO(featureNameFrom = "LectureListActivity")

@@ -13,13 +13,27 @@ import android.widget.EditText;
 
 import com.google.gson.Gson;
 
-//import org.springframework.boot.test.web.client.TestRestTemplate;
 
-
-//@LinksTo("LectureListActivity")
+@AnnotationList.AbstractFeature(abstractFatureName = "EventManipulations")
+@AnnotationList.Feature(featureName = "LectureEdition")
 public class LectureEdition extends AppCompatActivity {
 
     @AnnotationList.OnLongItemClickTO(featureNameFrom = "LectureListActivity")
+
+    @AnnotationList.InComingArg(convertedClass = Integer.class)
+    int position;
+
+    @AnnotationList.InComingArg(convertedClass = Lecture.class)
+    String lectureAsAString;
+
+    @AnnotationList.InComingArg(convertedClass = Boolean.class)
+    Boolean removeOpportunity;
+
+    @AnnotationList.InComingArg(convertedClass = String.class)
+    String selectedItemAsAString;
+
+    @AnnotationList.OutComingArg(convertedClass = Boolean.class)
+    Boolean wasItemRemoved = false;
 
     EditText lecturerEdit;
     EditText themeEdit;
@@ -28,12 +42,7 @@ public class LectureEdition extends AppCompatActivity {
     EditText timeEndEdit;
 
     Button button;
-
-    @AnnotationList.InComingArg(convertedClass = Integer.class)
-    int position;
-
-    @AnnotationList.InComingArg(convertedClass = Lecture.class)
-    String lectureAsAString;
+    Button removeButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +55,9 @@ public class LectureEdition extends AppCompatActivity {
         Lecture lecture = gson.fromJson(lectureAsAString, Lecture.class);
         position = getIntent().getExtras().getInt("position");
 
+        removeOpportunity = intent.getBooleanExtra("removeOpportunity", false);
+        selectedItemAsAString = intent.getStringExtra("selectedItemAsAString");
+
         lecturerEdit = findViewById(R.id.editText9);
         themeEdit = findViewById(R.id.editText10);
         abstractEdit = findViewById(R.id.editText11);
@@ -55,6 +67,15 @@ public class LectureEdition extends AppCompatActivity {
 
         button = findViewById(R.id.button);
         button.setOnClickListener(buttonListener);
+
+
+        removeButton = findViewById(R.id.removeButton);
+        removeButton.setOnClickListener(removeButtonListener);
+        removeButton.setText("Удалить");
+
+        if (!removeOpportunity) {
+            removeButton.setVisibility(View.GONE);
+        }
 
         // Case of addition
         if (position == -1) {
@@ -107,6 +128,22 @@ public class LectureEdition extends AppCompatActivity {
                 Intent intent = new Intent(LectureEdition.this, LectureListActivity.class);
                 intent.putExtra("lectureAsAString", lectureAsAString);
                 intent.putExtra("position", position);
+
+                setResult(Activity.RESULT_OK, intent);
+                finish();
+            }
+        }
+    };
+
+    private View.OnClickListener removeButtonListener = new View.OnClickListener() {
+        public void onClick(View v) {
+            if (v.getId() == R.id.removeButton)
+            {
+                wasItemRemoved = true;
+                Intent intent = new Intent(LectureEdition.this, LectureListActivity.class);
+                intent.putExtra("selectedItemAsAString", selectedItemAsAString);
+                intent.putExtra("selectedItemAsAString", selectedItemAsAString);
+                intent.putExtra("wasItemRemoved", true);
 
                 setResult(Activity.RESULT_OK, intent);
                 finish();
